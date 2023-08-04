@@ -1,9 +1,0 @@
-tech_init:
-    dependency:
-        get_input:
-            # tlef/cell_lef/netlist/upf/fp is required
-            cmd: input.cmd
-        build_tech:
-            cmd: build_tech.py
-
-

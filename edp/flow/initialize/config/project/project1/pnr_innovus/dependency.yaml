@@ -1,5 +1,0 @@
-pnr_innovus:
-    dependency:
-        init_pnr:
-            # tlef/cell_lef/netlist/upf/fp is required
-            cmd: init.cmd

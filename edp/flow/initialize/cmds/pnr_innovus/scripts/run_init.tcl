@@ -1,1 +1,0 @@
-/home/chenanping/edp/ref_flow/ref_flow/innovus_scripts/run_init.tcl
