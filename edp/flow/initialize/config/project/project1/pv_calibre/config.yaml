@@ -1,0 +1,23 @@
+pv_calibre:
+    default:
+        cpu_num: 8
+        memory: 10
+        option: ""
+        queue: "queue_pv"
+        span: 1
+        tool_opt: "tclsh"
+
+    fp_ipmerge:
+        cpu_num: 8
+        memory: 1000
+        option: "required option"
+    
+    fp_dummy:
+        cpu_num: 10
+        memory: 100
+        option: "required option"
+
+    final_dummy:
+        cpu_num: 8
+        memory: 1000
+        option: "required option final"
