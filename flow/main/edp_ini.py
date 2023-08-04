@@ -42,11 +42,11 @@ config_info = os.getcwd() + "/" + user_config["block_name"] + "/" + user_config[
 if "git_url" in user_config.keys() and user_config["git_url"] is not None:
 	repo_url = user_config["git_url"]
 else:
-	repo_url = "http://172.30.9.210:8899/flowdev/edp.git"
+	repo_url = "git@github.com:capjiaer/edp.git"
 if "git_branch" in user_config.keys() and user_config["git_branch"] is not None:
 	git_branch = user_config["git_branch"]
 else:
-	git_branch = "master"
+	git_branch = "main"
 # git.Repo.clone_from(repo_url, target_dir)
 source_flow = os.path.dirname(flow_dir)
 FlowIni.dir_gen(source_flow, user_config, git_url=repo_url, git_branch=git_branch, username="usr1", password="12345678")
