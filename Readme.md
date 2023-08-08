@@ -10,7 +10,7 @@ FILES:
 	A user cfg template for flow initialization
 
 3: ./requirement.txt
-	pip install -r requirement.txt
+	pip3.9 install -r requirement.txt -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
 
 4: ./env_setup.csh
 	Env setup for user initialization
