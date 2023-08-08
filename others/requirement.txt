@@ -1,6 +1,6 @@
-pandas=1.5.3
-pyyaml=6.0
+pandas==1.5.3
+pyyaml==6.0
 pathlib
-json=2.0.9
+json==2.0.9
 shutilwhich
 gitpython
