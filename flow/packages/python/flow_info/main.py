@@ -84,10 +84,10 @@ class FlowIni:
             rmtree(flow_dir)
         if os.path.isdir(flow_dir) is False:
             # Here should be git clone, but now just copy
-            #FlowIni.auto_git(git_url, flow_dir + "/main_pack", branch=git_branch, username=username, password=password)
-            FlowIni.auto_git(git_url, flow_dir, branch=git_branch, username=username, password=password)
-            #source_dir = flow_dir + "/main_pack/flow/"
-            #FlowIni.copytree(source_dir, flow_dir)
+            FlowIni.auto_git(git_url, flow_dir + "/main_pack", branch=git_branch, username=username, password=password)
+            source_dir = flow_dir + "/main_pack/flow/"
+            FlowIni.copytree(source_dir, flow_dir)
+            rmtree(flow_dir + "/main_pack")
             print("Git clone succeeded:", git_branch)
         cfg_dir = flow_dir + "/initialize/config/project/"
         # all copied to local and if not required, then remove
