@@ -35,10 +35,8 @@ DependencyIni(user_cfg_yaml).check_user_config()
 # Yml file is correct, then get user_config
 user_config = DependencyIni(input_config_file=user_cfg_yaml).return_dict()
 branch = os.getcwd() + "/" + user_config["block_name"] + "/" + user_config["nick_name"] + "/" + args.branch
-# config_info = os.getcwd() + "/" + user_config["block_name"] + "/" + user_config["nick_name"] + "/" + "/flow/initialize/config/project"
 config_info = os.getcwd() + "/" + user_config["block_name"] + "/" + user_config["nick_name"] + "/" + args.branch + "/flow/initialize/config/project"
 # 2.2 Git download required information
-# Here I set it as copy, but it will be set as git clone in the future
 if "git_url" in user_config.keys() and user_config["git_url"] is not None:
 	repo_url = user_config["git_url"]
 else:
@@ -47,7 +45,6 @@ if "git_branch" in user_config.keys() and user_config["git_branch"] is not None:
 	git_branch = user_config["git_branch"]
 else:
 	git_branch = "main"
-# git.Repo.clone_from(repo_url, target_dir)
 source_flow = os.path.dirname(flow_dir)
 FlowIni.dir_gen(source_flow, user_config, git_url=repo_url, git_branch=git_branch, username="usr1", password="12345678")
 # Git clone here is required
