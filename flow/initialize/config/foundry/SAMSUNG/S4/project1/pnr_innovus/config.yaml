@@ -1,0 +1,9 @@
+pnr_innovus:
+    default:
+        lsf: 1
+        cpu_num: 4
+        memory: 10
+        option: ""
+        queue: "normal"
+        span: 1
+        tool_opt: "innovus -file"

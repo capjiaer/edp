@@ -1,0 +1,29 @@
+# project_info
+
+# Basic info
+project_name: project1
+metal_stack: 14M_3Mx_2Fx_7Dx_2Iz_LB
+
+# Lib info
+tech_dir: "/home/chenxiaoguang/library/starC1/lib_A.0.0/tech"
+track: "7P94TR"
+
+# Check required flow selection
+sequence:
+    - tech_init
+    - pnr_innovus
+    #- pv_calibre
+    #- dc_syn
+
+pnr_innovus:
+  #tech_lef: ${tech_dir}/cadence/ln04lpp_tech_${metal_stack}.lef
+    #streamout_map_file: ${tech_dir}/cadence/tech.map
+    #qrctech_map_file: ${tech_dir}/qrc/TQRC.map
+    #qrctech_norm: ${tech_dir}/qrc/${metal_stack}/nominal/qrcTechFile
+    #qrctech_cmin: ${tech_dir}/qrc/${metal_stack}/SigCminDP_ErMinus/qrcTechFile
+    #qrctech_cmax: ${tech_dir}/qrc/${metal_stack}/SigCminDP_ErPlus/qrcTechFile
+    #qrctech_rcmin: ${tech_dir}/qrc/${metal_stack}/SigRCminDP_ErMinus/qrcTechFile
+    #qrctech_rcmax: ${tech_dir}/qrc/${metal_stack}/SigRCmaxDP_ErPlus/qrcTechFile
+    track: "7P94TR"
+
+    setup_tcl: /home/chenanping/new_case/setup.tcl

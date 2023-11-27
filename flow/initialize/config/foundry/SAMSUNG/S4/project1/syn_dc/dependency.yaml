@@ -1,0 +1,7 @@
+syn_dc:
+    - step1_dc:
+        in: data/fp.oas
+        out: data/fp_merged.oas
+        cmd: dc.tcl
+
+    
