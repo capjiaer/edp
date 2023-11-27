@@ -10,6 +10,7 @@ import json
 import yaml, os, re, sys, time
 from yaml.loader import FullLoader
 from pathlib import Path
+from translate.translate import TranslateCmd
 
 
 # The input_data shall be a dictionary|list, the makefile shall be a str, the return value is None
@@ -99,13 +100,12 @@ class DependencyIni:
         if mode == "flow_ini":
             check_dir = os.path.dirname(user_yaml)
             dir_branch = check_dir + "/" + user_config["block_name"] + "/" + user_config["nick_name"] + "/" + branch
-            config_info = dir_branch + "/flow/initialize/config/project"
         elif mode == "flow" or mode == "dependency":
             dir_branch = os.path.dirname(user_yaml)
-            config_info = dir_branch + "/flow/initialize/config/project"
         else:
             print("mode not supported, please check your configuration")
             exit()
+        config_info = dir_branch + "/flow/initialize/config"
 
         flow_yaml = config_info + "/main/flow_ini.yaml"
         project_yaml = config_info + "/main/main.yaml"
@@ -115,8 +115,8 @@ class DependencyIni:
         config_yaml_list = list()
         dependency_list = list()
         for func_list in pre_var['sequence']:
-            func_cfg_yaml = Path(dir_branch)/"flow/initialize/config/project"/func_list/"config.yaml"
-            dependency_yaml = Path(dir_branch)/"flow/initialize/config/project"/func_list/"dependency.yaml"
+            func_cfg_yaml = Path(dir_branch)/"flow/initialize/config"/func_list/"config.yaml"
+            dependency_yaml = Path(dir_branch)/"flow/initialize/config"/func_list/"dependency.yaml"
             if os.path.exists(func_cfg_yaml):
                 config_yaml_list.append(str(func_cfg_yaml))
                 dependency_list.append(str(dependency_yaml))
@@ -209,6 +209,23 @@ class DependencyIni:
             stream.write("\n")
             stream.close()
 
+	def tcl2tcl(self, tcl_in, tcl_out, mode="a+"):
+		"""
+		:param mode: a+ or w
+		:param yaml_in: the input tcl file
+		:param tcl_out: the output tcl file
+		:return: None
+		"""
+		data_in = TranslateCmd.get_dict_interp(tcl_in)
+		key_list = data_ini.keys()
+
+		with open(tcl_out, mode) as stream:
+			stream.write("# " + str(tcl_in) + "\n\n")
+			self.stream2tcl_io(data_ini, stream, key_list)
+			stream.write("\n")
+			stream.close()
+
+
     def json2tcl(self, json_in, tcl_out, mode='a+'):
         """
         :param mode: a+ or w
@@ -261,7 +278,7 @@ class DependencyIni:
         examples:
             abc:
                 a1: b
-            -> 
+            ->
             set abc(a1) b
         """
         if data_ini is not None:
@@ -416,7 +433,7 @@ class DependencyIni:
                 self.get_cmds_list(ele_value, target, restore_info_list)
 
     @staticmethod
-    def makefile_temp(makefile, target, step_name, run_script, merged_var, info_list=None, dir_path=None):
+    def makefile_temp(makefile, target, step_name, run_script, merged_var, info_list=None, dir_path=None, lsf_mode="-Ip -J"):
         """
         :param info_list: list of required information
         :param makefile: a makefile io object
@@ -461,12 +478,30 @@ class DependencyIni:
         ini_str = cd_str + bsub_str
         job_name = target + "." + step_name
         resource_str = " -n %s -R \"rusage[mem=%s] span[hosts=%s]\"" % (info_dict['cpu_num'], info_dict['memory'], info_dict['span'])
-        log_str = " |tee -i ../../logs/%s.%s.log;" % (target, step_name)
-        gzip_log = " gzip -f ../../logs/%s.%s.log" % (target, step_name)
+		# Update log related info in 20231115
+		# Make dir if log dir is not exit
+		target_log_dir = os.getcwd() + "/logs/" + target
+		if not os.path.exists(target_log_dir):
+			os.makedirs(target_log_dir)
+		# The info will write into makefile
+		log_name = "../../logs/{0}/{1}.{2}".format(target,target,step_name)
+        log_tee = " |tee -i {}.log;".format(log_name)
+		gzip_log_ini = log_name + "_$(shell date +%Y_%m_%d_%H_%M).log"
+        gzip_log = " gzip -c %s > %s.log" % (log_name + ".log", gzip_log_ini)
+
+		# if lsf is not decleared, these info is not required
+		lsf_str = ""
+		log_str = ""
+		log_final = log_tee + gzip_log
         if "lsf" in info_dict.keys() and info_dict["lsf"]:
-            final_str = "	" + ini_str + "-Ip -J " + job_name + resource_str + " " + info_dict['tool_opt'] + " " + run_script + log_str + gzip_log + "\n"
-        else:
-            final_str = "	" + cd_str + info_dict['tool_opt'] + " " + run_script + log_str + gzip_log + "\n"
+			lsf_str = bsub_str + lsf_mode + job_name + resource_str + " "
+		# Setup final_str
+		if "log_info" in merged_var[target].keys() and merged_var[target]['log_info']:
+			log_str = " " + merged_var[target]['log_info'] + " " + gzip_log_ini
+			log_final = ""
+
+		# log.v is required
+        final_str = "	" + cd_str + lsf_str + info_dict['tool_opt'] + " " + run_script + log_str + log_final + "\n"
         makefile.write("	@mkdir -p runs/%s.%s\n" % (target, step_name))
         makefile.write(final_str)
 

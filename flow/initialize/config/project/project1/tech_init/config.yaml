@@ -1,8 +1,0 @@
-tech_init:
-    default:
-        cpu_num: 4
-        memory: 10
-        option: ""
-        queue: "normal"
-        span: 1
-        tool_opt: "python3"

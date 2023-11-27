@@ -15,21 +15,54 @@ from dependency.main import GetUserInfo, DependencyIni
 from lib_ini.gen_libs import GetSortedLib, config_sort
 from flow_info.main import FlowIni
 from flow_info.flow_func import *
+from translate.translate import TranslateCmd
 
 
 class Flow:
     def __init__(self, input_config_file="", input_info=None):
         super(Flow, self).__init__()
 
+	@staticmethod
+	def create_branch(required_link_dir_list, branch_name):
+		for ele in required_link_dir_list:
+			source_dir = os.getcwd() + "/" + ele
+			if os.path.exists(source_dir):
+				target_dir = os.path.dirname(os.getcwd()) + "/" + branch_name + "/" +ele
+				paths = [os.path.join(source_dir), f] for f in os.listdir(source_dir)
+				for path in paths:
+					name = os.path.basename(path)
+					source_path = os.path.realpath(path)
+					target_link_path = os.path.join(target_dir,name)
+					# Update 20231114, do symlink for each file
+					FlowIni.copytree(source_path, target_link_path, link_mode=1)
+
+
+	@staticmethod
+	# Update in 20231114
+	def update_tclvar(input_dict, tcl_file):
+		if os.path.exists(tcl_file):
+			tcl_var_dict = TranslateCmd.get_dict_interp(tcl_file)
+			input_dict = DependencyIni.merge_dicts(input_dict, tcl_var_dict)
+		return input_dict
+
     @staticmethod
-    def update_params(branch, mode="flow", yaml_file="full.yaml", tcl_file="full.tcl"):
+    def update_params(branch, mode="flow", yaml_file="full.yaml", tcl_file="full.tcl", tcl_key="setup_tcl", merge_tcl_info=1):
         main_path = os.getcwd()
         user_cfg_yaml = main_path + "/user_config.yaml"
         yaml_list = DependencyIni.get_yaml_list(user_cfg_yaml, branch=branch, mode=mode)
+		# Update merged_var here, secquence is likewise tcl file
         merged_var = DependencyIni.merged_var(*yaml_list, info=False)
+		# Update for tcl dict merge join in setup_tcl
+		merged_var = Flow.update_tclvar(merged_var,merged_var[tcl_key])
+		# Re merge user_ymal information, cause this one controls all by user and the priority shall be correct
+		with open(user_cfg_yaml, "r") as stream:
+			user_dict = yaml.safe_load(stream):
+		merged_var = DependencyIni.merge_dicts(merged_var, user_dict)
+
+		# Update done
         target_yaml = os.getcwd() + "/config/" + yaml_file
         DependencyIni.dict2out(merged_var, target_yaml)
-        config_sort(os.getcwd() + "/config/", yaml_list, merged_tcl_name=tcl_file, info=False)
+        config_sort(os.getcwd() + "/config/", yaml_list, merged_tcl_name=tcl_file, info=False, input_dict=merged_var)
 
     @staticmethod
     def gen_args():
@@ -100,6 +133,7 @@ class Flow:
         return dict_in
 
     @staticmethod
+	# This function abandon 20231114, the translation mode has been replaced by new function, debug mode now ignored
     def fresh_cmds(pre_cmd, target_dir, merged_dict=None, mode='default', sub_mode="flow", user_cfg_yaml=None, translate=1):
         """
         :param merged_dict: Dictionary input, if merged_dict not None, user_cfg_yaml is ignored
@@ -180,6 +214,7 @@ class Flow:
                                     while result:
                                         line = re.sub(ele_str, r'\1\2', line)
                                         result = re.match(ele_str, line)
+				line = line.replace("<<:", "").replace(":>>", "")
                 target_info.write(line)
         target_info.close()
         os.system('chmod +x %s' % target_cmd)
