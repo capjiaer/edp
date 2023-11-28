@@ -209,21 +209,21 @@ class DependencyIni:
             stream.write("\n")
             stream.close()
 
-	def tcl2tcl(self, tcl_in, tcl_out, mode="a+"):
-		"""
-		:param mode: a+ or w
-		:param yaml_in: the input tcl file
-		:param tcl_out: the output tcl file
-		:return: None
-		"""
-		data_in = TranslateCmd.get_dict_interp(tcl_in)
-		key_list = data_ini.keys()
+    def tcl2tcl(self, tcl_in, tcl_out, mode="a+"):
+        """
+        :param mode: a+ or w
+        :param yaml_in: the input tcl file
+        :param tcl_out: the output tcl file
+        :return: None
+        """
+        data_in = TranslateCmd.get_dict_interp(tcl_in)
+        key_list = data_ini.keys()
 
-		with open(tcl_out, mode) as stream:
-			stream.write("# " + str(tcl_in) + "\n\n")
-			self.stream2tcl_io(data_ini, stream, key_list)
-			stream.write("\n")
-			stream.close()
+        with open(tcl_out, mode) as stream:
+            stream.write("# " + str(tcl_in) + "\n\n")
+            self.stream2tcl_io(data_ini, stream, key_list)
+            stream.write("\n")
+            stream.close()
 
 
     def json2tcl(self, json_in, tcl_out, mode='a+'):
@@ -454,8 +454,8 @@ class DependencyIni:
             # Eventually make file gen base on info_dict information in previous part
             info_list = ['cpu_num', 'memory', 'option', 'queue', 'span', 'tool_opt', 'lsf']
 
-        makefile.write("	@echo \"Running: " + target + "." + step_name + "\"\n")
-        makefile.write("	@sleep 2s \n")
+        makefile.write("    @echo \"Running: " + target + "." + step_name + "\"\n")
+        makefile.write("    @sleep 2s \n")
         info_dict = dict()
         # Init all as empty
         for ele in info_list:
@@ -478,31 +478,31 @@ class DependencyIni:
         ini_str = cd_str + bsub_str
         job_name = target + "." + step_name
         resource_str = " -n %s -R \"rusage[mem=%s] span[hosts=%s]\"" % (info_dict['cpu_num'], info_dict['memory'], info_dict['span'])
-		# Update log related info in 20231115
-		# Make dir if log dir is not exit
-		target_log_dir = os.getcwd() + "/logs/" + target
-		if not os.path.exists(target_log_dir):
-			os.makedirs(target_log_dir)
-		# The info will write into makefile
-		log_name = "../../logs/{0}/{1}.{2}".format(target,target,step_name)
+        # Update log related info in 20231115
+        # Make dir if log dir is not exit
+        target_log_dir = os.getcwd() + "/logs/" + target
+        if not os.path.exists(target_log_dir):
+            os.makedirs(target_log_dir)
+        # The info will write into makefile
+        log_name = "../../logs/{0}/{1}.{2}".format(target,target,step_name)
         log_tee = " |tee -i {}.log;".format(log_name)
-		gzip_log_ini = log_name + "_$(shell date +%Y_%m_%d_%H_%M).log"
+        gzip_log_ini = log_name + "_$(shell date +%Y_%m_%d_%H_%M).log"
         gzip_log = " gzip -c %s > %s.log" % (log_name + ".log", gzip_log_ini)
 
-		# if lsf is not decleared, these info is not required
-		lsf_str = ""
-		log_str = ""
-		log_final = log_tee + gzip_log
+        # if lsf is not decleared, these info is not required
+        lsf_str = ""
+        log_str = ""
+        log_final = log_tee + gzip_log
         if "lsf" in info_dict.keys() and info_dict["lsf"]:
-			lsf_str = bsub_str + lsf_mode + job_name + resource_str + " "
-		# Setup final_str
-		if "log_info" in merged_var[target].keys() and merged_var[target]['log_info']:
-			log_str = " " + merged_var[target]['log_info'] + " " + gzip_log_ini
-			log_final = ""
+            lsf_str = bsub_str + lsf_mode + job_name + resource_str + " "
+        # Setup final_str
+        if "log_info" in merged_var[target].keys() and merged_var[target]['log_info']:
+            log_str = " " + merged_var[target]['log_info'] + " " + gzip_log_ini
+            log_final = ""
 
-		# log.v is required
-        final_str = "	" + cd_str + lsf_str + info_dict['tool_opt'] + " " + run_script + log_str + log_final + "\n"
-        makefile.write("	@mkdir -p runs/%s.%s\n" % (target, step_name))
+        # log.v is required
+        final_str = "   " + cd_str + lsf_str + info_dict['tool_opt'] + " " + run_script + log_str + log_final + "\n"
+        makefile.write("    @mkdir -p runs/%s.%s\n" % (target, step_name))
         makefile.write(final_str)
 
     def gen_dependency(self, input_data: 'dict|list', makefile, lib_info_path, target, merged_var, runs_dir=None) -> None:

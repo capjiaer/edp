@@ -27,17 +27,17 @@ def config_sort(config_dir, yaml_list, merged_tcl_name='full.tcl', info=True, in
     merged_info = os.path.join(config_dir, merged_tcl_name)
     if os.path.exists(merged_info):
         os.remove(merged_info)
-	# Below secquence has been modified
-	# [yaml1,yaml2.., yaml_final] -> [yaml1,yaml2.., tcl_info, yaml_final]
-	for yaml_ele in yaml_list[:-1]:
+    # Below secquence has been modified
+    # [yaml1,yaml2.., yaml_final] -> [yaml1,yaml2.., tcl_info, yaml_final]
+    for yaml_ele in yaml_list[:-1]:
         DependencyIni(yaml_ele).yaml2tcl(yaml_ele, merged_info)
-	# Tcl file insertion is required 20231108, write tcl_info into merged_info
-	if input_dict:
-		tcl_file = input_dict[info_key]
-		TranslateCmd.get_dict_interp(tcl_file)
-		DependencyIni().tcl2tcl(tcl_file, merged_info)
-	# yaml_final insertion
-	DependencyIni(yaml_list[-1]).yaml2tcl(yaml_list[-1], merged_info)
+    # Tcl file insertion is required 20231108, write tcl_info into merged_info
+    if input_dict:
+        tcl_file = input_dict[info_key]
+        TranslateCmd.get_dict_interp(tcl_file)
+        DependencyIni().tcl2tcl(tcl_file, merged_info)
+    # yaml_final insertion
+    DependencyIni(yaml_list[-1]).yaml2tcl(yaml_list[-1], merged_info)
     if info:
         print("[TCL_INFO] Yaml transformation finished: ", merged_info)
 

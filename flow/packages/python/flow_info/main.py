@@ -64,12 +64,12 @@ class FlowIni:
 
     @staticmethod
     def copytree(source_dir, target_dir, link_mode = 0, overwrite = 0):
-		"""
-		params: source_dir -> copy from dir
-		params: target_dir -> copy to dir
-		params: link_mode -> if link_mode 1, then the file will be link in the target dir
-		params, overwrite -> if overwrite 1, then the link_mode will remove target file first, then re-link, but fi overwrite is 0, then link mode skip files which already exist in the target dir.
-		"""
+        """
+        params: source_dir -> copy from dir
+        params: target_dir -> copy to dir
+        params: link_mode -> if link_mode 1, then the file will be link in the target dir
+        params, overwrite -> if overwrite 1, then the link_mode will remove target file first, then re-link, but fi overwrite is 0, then link mode skip files which already exist in the target dir.
+        """
 
         # Copy all files in source_dir to target_dir
         for root, dirs, files in os.walk(source_dir):
@@ -79,16 +79,16 @@ class FlowIni:
                 source_file = os.path.join(root, file)
                 target_file = os.path.join(target_root, file)
                 if os.path.exists(source_file):
-					if link_mode:
-						if overwrite:
-							if os.path.exists(target_file):
-								os.remove(target_file)
-						if not os.path.exists(target_file):
-							os.symlink(source_file, target_file)
-						# Update 20231114, incase users modify it unexpectedly
-						os.chmod(source_file, 0o555)
-					else:
-						shutil.copy2(source_file, target_file)
+                    if link_mode:
+                        if overwrite:
+                            if os.path.exists(target_file):
+                                os.remove(target_file)
+                        if not os.path.exists(target_file):
+                            os.symlink(source_file, target_file)
+                        # Update 20231114, incase users modify it unexpectedly
+                        os.chmod(source_file, 0o555)
+                    else:
+                        shutil.copy2(source_file, target_file)
 
 
     @staticmethod
@@ -97,7 +97,7 @@ class FlowIni:
         block_dir = source_path + "/" + dict_in["block_name"]
         flow_dir = block_dir + "/" + dict_in['nick_name'] + "/" + branch + '/flow'
 
-		FlowIni.git_info_partial(os.path.dirname(flow_dir), keep_git = keep_git, git_branch=git_branch, required_dirs=required_dirs)
+        FlowIni.git_info_partial(os.path.dirname(flow_dir), keep_git = keep_git, git_branch=git_branch, required_dirs=required_dirs)
 
     @staticmethod
     def dir_gen(source_dir, dict_in, block_name="block_name", project_name="project_name", branch="main", refresh=True, git_url="git_url", git_branch="master", username="username", password="password", keep_git=0, required_dirs=[]):
@@ -136,77 +136,77 @@ class FlowIni:
         else:
             git.Repo.clone_from(repo_url, destination_path, branch=branch)
 
-	@staticmethod
-	def git_info_partial(local_dir, git_branch='main', input_dict=dict(), repo_url="git@github.com:capjiaer/edp.git", required_dirs=[], foundry_name="SAMSUNG", node='S4', project_name='project1', keep_git=1):
+    @staticmethod
+    def git_info_partial(local_dir, git_branch='main', input_dict=dict(), repo_url="git@github.com:capjiaer/edp.git", required_dirs=[], foundry_name="SAMSUNG", node='S4', project_name='project1', keep_git=1):
 
-		if input_dict:
-			foundry_name = input_dict['foundry']
-			node = input_dict['node']
-			project_name = input_dict['project_name']
+        if input_dict:
+            foundry_name = input_dict['foundry']
+            node = input_dict['node']
+            project_name = input_dict['project_name']
 
-		prj_info = "foundry/{}/{}/{}".format(foundry_name,node,project_name)
-		config_dir = local_dir + "/flow/initialize/config/"
-		prj_info = config_dir + prj_info
-		git_config_dir = "/flow/initialize/config/" + prj_info
+        prj_info = "foundry/{}/{}/{}".format(foundry_name,node,project_name)
+        config_dir = local_dir + "/flow/initialize/config/"
+        prj_info = config_dir + prj_info
+        git_config_dir = "/flow/initialize/config/" + prj_info
 
-		destination_path = local_dir
-		if keep_git:
-			if os.path.exists(destination_path + "/.git"):
-				print("git detected, skip edp initialization in", destination_path)
-				return
-			else:
-				print("git will be remain in the run dir")
-				print("in this mode, you may update flow by git if only you want")
-		# Refresh destination_path and git
-		if os.path.exists(destination_path + "/.git"):
-			shutil.rmtree(destination_path + "/.git")
+        destination_path = local_dir
+        if keep_git:
+            if os.path.exists(destination_path + "/.git"):
+                print("git detected, skip edp initialization in", destination_path)
+                return
+            else:
+                print("git will be remain in the run dir")
+                print("in this mode, you may update flow by git if only you want")
+        # Refresh destination_path and git
+        if os.path.exists(destination_path + "/.git"):
+            shutil.rmtree(destination_path + "/.git")
 
-		if os.path.exists(destination_path + "/flow"):
-			shutil.rmtree(destination_path + "/flow")
-		os.makedirs(destination_path + "/flow")
+        if os.path.exists(destination_path + "/flow"):
+            shutil.rmtree(destination_path + "/flow")
+        os.makedirs(destination_path + "/flow")
 
-		# Git init
-		git_init_cmd = ["git", 'init']
-		subprocess.run(git_init_cmd, cwd= destination_path)
+        # Git init
+        git_init_cmd = ["git", 'init']
+        subprocess.run(git_init_cmd, cwd= destination_path)
 
-		# Create sparse-checkout file for usage, here take flow as setup
-		sparse_checkout_file = destination_path + "/.git/info/sparse-checkout"
-		git_sparescheckout = ['git', 'config', 'core.sparsecheckout', 'true']
-		with open(sparse_checkout_file, 'w') as stream:
-			# Default requirement
-			stream.write("flow/initialize/cmds/\n")
-			stream.write("flow/initialize/templates/\n")
-			stream.write(git_config_dir + "\n")
-			# For ele in required_dirs, it will be cloned
-			for dir_name in require_dirs:
-				stream.write(dir_name + "\n")
+        # Create sparse-checkout file for usage, here take flow as setup
+        sparse_checkout_file = destination_path + "/.git/info/sparse-checkout"
+        git_sparescheckout = ['git', 'config', 'core.sparsecheckout', 'true']
+        with open(sparse_checkout_file, 'w') as stream:
+            # Default requirement
+            stream.write("flow/initialize/cmds/\n")
+            stream.write("flow/initialize/templates/\n")
+            stream.write(git_config_dir + "\n")
+            # For ele in required_dirs, it will be cloned
+            for dir_name in required_dirs:
+                stream.write(dir_name + "\n")
 
-		# Turn on sparsecheckout
-		subprocess.run(git_sparescheckout, cwd=destination_path)
+        # Turn on sparsecheckout
+        subprocess.run(git_sparescheckout, cwd=destination_path)
 
-		# Setup git links from source
-		git_add_repo = ['git', 'remote', 'add', 'origin', repo_url]
-		subprocess.run(git_add_repo, cwd=destination_path)
+        # Setup git links from source
+        git_add_repo = ['git', 'remote', 'add', 'origin', repo_url]
+        subprocess.run(git_add_repo, cwd=destination_path)
 
-		# Git pull target file
-		git_pull = ['git', 'pull', 'origin', repo_url]
-		subprocess.run(git_pull, cwd=destination_path)
-		print("Git clone succeeded:", git_branch)
-		print("Flow Updated and Refreshed")
+        # Git pull target file
+        git_pull = ['git', 'pull', 'origin', repo_url]
+        subprocess.run(git_pull, cwd=destination_path)
+        print("Git clone succeeded:", git_branch)
+        print("Flow Updated and Refreshed")
 
-		# Turn off sparsecheckout
-		git_sparescheckout = ['git', 'config', 'core.sparsecheckout', 'false']
-		subprocess.run(git_sparescheckout, cwd=destination_path)
+        # Turn off sparsecheckout
+        git_sparescheckout = ['git', 'config', 'core.sparsecheckout', 'false']
+        subprocess.run(git_sparescheckout, cwd=destination_path)
 
-		# Move config dir
-		FlowIni.copytree(prj_info, config_dir)
-		if os.path.exists(config_dir + "/foundry"):
-			shutil.rmtree(config_dir + "/foundry")
+        # Move config dir
+        FlowIni.copytree(prj_info, config_dir)
+        if os.path.exists(config_dir + "/foundry"):
+            shutil.rmtree(config_dir + "/foundry")
 
-		# rm git info here 20231110, the user udpate decided by the git owner here, maybe bugs here, if git owner updated git, the user have to update if below logic
-		if os.path.exists(destination_path + "/.git"):
-			if not keep_git:
-				shutil.rmtree(destination_path + "/.git")
+        # rm git info here 20231110, the user udpate decided by the git owner here, maybe bugs here, if git owner updated git, the user have to update if below logic
+        if os.path.exists(destination_path + "/.git"):
+            if not keep_git:
+                shutil.rmtree(destination_path + "/.git")
 
 
 if __name__ == '__main__':
