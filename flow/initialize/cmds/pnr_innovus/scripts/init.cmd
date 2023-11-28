@@ -4,6 +4,7 @@
 #1 >> modified samsung n4 flow as ref flow
 #Init basic information
 set step "init"
+# AP test
 
 setMultiCpuUsage -reset
 if {[info exist pnr_innovus(default,cpu_num)]} {
