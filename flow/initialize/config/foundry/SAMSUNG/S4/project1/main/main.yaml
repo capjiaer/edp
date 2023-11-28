@@ -26,4 +26,4 @@ pnr_innovus:
     #qrctech_rcmax: ${tech_dir}/qrc/${metal_stack}/SigRCmaxDP_ErPlus/qrcTechFile
     track: "7P94TR"
 
-    setup_tcl: /home/chenanping/new_case/setup.tcl
+setup_tcl: /home/chenanping/new_case/setup.tcl

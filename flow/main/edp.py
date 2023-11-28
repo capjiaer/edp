@@ -32,6 +32,11 @@ cmds_dir = os.path.join(os.getcwd(), "cmds")
 branch_info = os.getcwd().split("/")[-1]
 yaml_list = DependencyIni.get_yaml_list(user_cfg_yaml, branch_info, mode='flow')
 merged_var = DependencyIni().merged_var(*yaml_list, info=False)
+# Add tcl_var to support a std alone tcl flow, the tcl file deliverd by key setup_tcl
+if "tcl_var" in merged_var.keys() and os.path.exists(merged_var["setup_tcl"]):
+    tcl_var = TranslateCmd.get_dict_interp(merged_var["setup_tcl"])
+else:
+    tcl_var = dict()
 # Options is required
 
 # Step1: Argparse setup
@@ -72,36 +77,33 @@ if args.gen_cmds:
     FlowIni.create_makefile(merged_var, mode="flow", dependency_info_dict="dependency")
     for dependency_ele in merged_var['sequence']:
         # Dependency information comes from below:
-        dependency_yaml = Path(os.getcwd())/"flow/initialize/config/project"/dependency_ele/"dependency.yaml"
+        dependency_yaml = Path(os.getcwd())/"flow/initialize/config"/dependency_ele/"dependency.yaml"
         root_cmd_dir = Path(os.getcwd())/"flow/initialize/cmds"/dependency_ele
-        # tune files information comes from below, copy all tune files to the tune directory
+        # Tune files information comes from below, copy all tune files to the tune directory
+        # Code improve 202231114, use updated function copytree here
         tune_files_source = str(root_cmd_dir) + "/proc"
         tune_files_target = os.getcwd() + "/tune/" + dependency_ele
-        if os.path.exists(tune_files_target):
-            shutil.rmtree(tune_files_target)
-            if os.path.exists(tune_files_source):
-                shutil.copytree(tune_files_source, tune_files_target)
-        else:
-            if os.path.exists(tune_files_source):
-                shutil.copytree(tune_files_source, tune_files_target)
+        # Here set link_mode, which means if users want to modify tunfile, rm old symlink is required, which incase un-expected modify
+        FlowIni.copytree(tune_files_source, tune_files_target, link_mode=1)
 
         translate = (lambda x: 1 if x else 0)(args.debug)
         cmds_list = Flow.get_cmds(dependency_yaml, root_cmd_dir, cmds_dir, dependency_ele, merged_var, translate=translate)
         main_util = os.getcwd() + "/flow/initialize/templates/main_util/"
         for cmd in cmds_list:
-            # Do util replacement first
-            cmd_util = os.path.dirname(os.path.dirname(cmd)) + "/util"
+            # All in all, the replacement contains 2 steps
+            # 2: Replacement base on tcl input in dict(['setup_tcl'])
+
+            # Step1: Do util replacement first
+            cmd_split_list = os.path.dirname(cmd).split("/")
+            index = cmd_split_list.index("cmds")
+            cmd_util = os.getcwd() + "/flow/initialize/cmds/" + cmd_split_list[index+1] + "/util/"
+            # Util file will comes from:
+            # 1: <workdir>/flow/initialize/templates/main_util
+            # 2: <workdir>/flow/initialize/cmds/dependency_ele/util
             util_dir_list = [main_util, cmd_util]
             TranslateCmd(cmd).util_apply(util_dir_list)
-            # Do replacement, this one just pending here, will be update in the future
-            if args.debug:
-                TranslateCmd(cmd).main_func()
-            elif args.debug_enhance:
-                TranslateCmd(cmd).main_func(debug=True)
-            else:
-                target_file = cmd + ".mid"
-                if os.path.exists(target_file):
-                    os.remove(target_file)
+            # Do replacement for var replacement
+            TranslateCmd.dict_replace_tclfile(tcl_var,cmd,cmd)
         print("")
 
 # Func4: Create branch
@@ -126,27 +128,19 @@ if args.branch:
     # Initialize branch flow
     branch = branch_ini + "/" + args.branch
     os.makedirs(branch, exist_ok=True)
-    config_info = os.path.dirname(branch_ini) + "/flow/initialize/config/project"
+
     source_flow = os.path.dirname(flow_dir)
-    FlowIni.dir_gen(source_flow, user_config, branch=args.branch, refresh=True)
+    # Update 20231115, git get packages dir
+    FlowIni.dir_gen(source_flow, user_config, branch=args.branch, refresh=True, required_dirs=["flow/packages/tcl"])
     # Copy args.config to new branch and default set yaml as user_config.yaml
     os.system('cp ' + user_cfg_yaml + " " + branch_ini + "/" + args.branch + "/user_config.yaml")
     # Initial libs
     yaml_list = DependencyIni.get_yaml_list(user_cfg_yaml, branch_info, mode='flow')
     merged_var = DependencyIni().merged_var(*yaml_list)
     # GetSortedLib.link_libs(merged_var['libs_info'], branch)
-    # Link data files for branch
     # All files in required_link_dir is required
     required_link_dir = ['data', 'hooks', 'pass', 'rpts', 'runs']
-    for ele in required_link_dir:
-        source_dir = os.getcwd() + '/' + ele
-        if os.path.exists(source_dir):
-            target_dir = os.path.dirname(os.getcwd()) + '/' + args.branch + '/' + ele
-            paths = [os.path.join(source_dir, f) for f in os.listdir(source_dir)]
-            for path in paths:
-                name = os.path.basename(path)
-                path = os.path.realpath(path)
-                os.symlink(path, os.path.join(target_dir, name))
+    Flow.create_branch(required_link_dir, args.branch)
     print('Branch setup done')
 
 # Func5: Create branch

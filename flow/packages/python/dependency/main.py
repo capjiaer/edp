@@ -60,13 +60,13 @@ class DependencyIni:
     # get_cfg_info/show_cfg_info:           working for show the user_cfg information
     # get_target_info:                      working for get the target information
     # create_dependency/gen_dependency:     working for create makefile dependency
-    def __init__(self, input_config_file="", input_info=None):
+    def __init__(self, input_config_file=None, input_info=None):
         super(DependencyIni, self).__init__()
         self.mode_list = None
         self.config_file = input_config_file
         self.pre_key = ""
         self.cmd_list = []
-        if input_config_file != "" and os.path.exists(input_config_file):
+        if input_config_file and os.path.exists(input_config_file):
             with open(input_config_file, 'r') as stream:
                 if os.path.splitext(input_config_file)[1] == ".yaml":
                     self.data_ini = yaml.load(stream, Loader=FullLoader)
@@ -454,8 +454,8 @@ class DependencyIni:
             # Eventually make file gen base on info_dict information in previous part
             info_list = ['cpu_num', 'memory', 'option', 'queue', 'span', 'tool_opt', 'lsf']
 
-        makefile.write("    @echo \"Running: " + target + "." + step_name + "\"\n")
-        makefile.write("    @sleep 2s \n")
+        makefile.write("	@echo \"Running: " + target + "." + step_name + "\"\n")
+        makefile.write("	@sleep 2s \n")
         info_dict = dict()
         # Init all as empty
         for ele in info_list:
@@ -487,7 +487,7 @@ class DependencyIni:
         log_name = "../../logs/{0}/{1}.{2}".format(target,target,step_name)
         log_tee = " |tee -i {}.log;".format(log_name)
         gzip_log_ini = log_name + "_$(shell date +%Y_%m_%d_%H_%M).log"
-        gzip_log = " gzip -c %s > %s.log" % (log_name + ".log", gzip_log_ini)
+        gzip_log = " gzip -c %s > %s.gz" % (log_name + ".log", gzip_log_ini)
 
         # if lsf is not decleared, these info is not required
         lsf_str = ""
@@ -501,8 +501,8 @@ class DependencyIni:
             log_final = ""
 
         # log.v is required
-        final_str = "   " + cd_str + lsf_str + info_dict['tool_opt'] + " " + run_script + log_str + log_final + "\n"
-        makefile.write("    @mkdir -p runs/%s.%s\n" % (target, step_name))
+        final_str = "	" + cd_str + lsf_str + info_dict['tool_opt'] + " " + run_script + log_str + log_final + "\n"
+        makefile.write("	@mkdir -p runs/%s.%s\n" % (target, step_name))
         makefile.write(final_str)
 
     def gen_dependency(self, input_data: 'dict|list', makefile, lib_info_path, target, merged_var, runs_dir=None) -> None:

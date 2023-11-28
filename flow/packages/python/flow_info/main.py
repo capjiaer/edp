@@ -45,10 +45,10 @@ class FlowIni:
         # Eventually, Makefile creation base on sequence info and pre_setup info
         for ele in info_dict['sequence']:
             if mode == "flow_ini":
-                target_info_path = info_dict[block_name] + "/flow/initialize/config/project/" + ele
+                target_info_path = info_dict[block_name] + "/flow/initialize/config/" + ele
                 dependency_yaml = os.getcwd() + "/" + target_info_path + "/dependency.yaml"
             elif mode == "flow":
-                target_info_path = os.getcwd() + "/flow/initialize/config/project/" + ele
+                target_info_path = os.getcwd() + "/flow/initialize/config/" + ele
                 dependency_yaml = target_info_path + "/dependency.yaml"
             DependencyIni(dependency_yaml).create_dependency(makefile_path, ele, os.path.dirname(dependency_yaml), info_dict, mode=dependency_info_dict)
 
@@ -144,10 +144,10 @@ class FlowIni:
             node = input_dict['node']
             project_name = input_dict['project_name']
 
-        prj_info = "foundry/{}/{}/{}".format(foundry_name,node,project_name)
+        prj_info_sub = "foundry/{}/{}/{}".format(foundry_name,node,project_name)
         config_dir = local_dir + "/flow/initialize/config/"
-        prj_info = config_dir + prj_info
-        git_config_dir = "/flow/initialize/config/" + prj_info
+        prj_info = config_dir + prj_info_sub
+        git_config_dir = "/flow/initialize/config/" + prj_info_sub
 
         destination_path = local_dir
         if keep_git:
@@ -189,7 +189,9 @@ class FlowIni:
         subprocess.run(git_add_repo, cwd=destination_path)
 
         # Git pull target file
-        git_pull = ['git', 'pull', 'origin', repo_url]
+        # Modified 1128
+        git_pull = ['git', 'pull', repo_url]
+        # git_pull = ['git', 'pull', 'origin', repo_url]
         subprocess.run(git_pull, cwd=destination_path)
         print("Git clone succeeded:", git_branch)
         print("Flow Updated and Refreshed")
