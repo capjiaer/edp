@@ -3,7 +3,7 @@ block_name: nbio_pcie_t
 nick_name: run_01
 libs_info: /home/chenanping/edp/source/libs/gen_libs/case/install/
 workdir: $flow_path/../
-git_url: /home/chenanping/edp_dev/edp/.git
+#git_url: /home/chenanping/edp_dev/edp/.git
 pnr_innovus:
     upf_file: ""
     lowpower_design: "1"
