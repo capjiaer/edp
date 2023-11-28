@@ -7,4 +7,4 @@ set srcfile=${srcdir}/edp.py
 echo $srcfile
 
 #Execute file
-python3.9 $srcfile $*
+python3.11 $srcfile $*
