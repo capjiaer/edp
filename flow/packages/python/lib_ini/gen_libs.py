@@ -32,7 +32,7 @@ def config_sort(config_dir, yaml_list, merged_tcl_name='full.tcl', info=True, in
     for yaml_ele in yaml_list[:-1]:
         DependencyIni(yaml_ele).yaml2tcl(yaml_ele, merged_info)
     # Tcl file insertion is required 20231108, write tcl_info into merged_info
-    if input_dict and info_key in input_dict.keys():
+    if input_dict and info_key in input_dict.keys() and os.path.exists(input_dict[info_key]):
         tcl_file = input_dict[info_key]
         TranslateCmd.get_dict_interp(tcl_file)
         DependencyIni().tcl2tcl(tcl_file, merged_info)

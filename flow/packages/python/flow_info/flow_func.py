@@ -53,7 +53,7 @@ class Flow:
         # Update merged_var here, secquence is likewise tcl file
         merged_var = DependencyIni.merged_var(*yaml_list, info=False)
         # Update for tcl dict merge join in setup_tcl
-        if tcl_key in merged_var.keys():
+        if tcl_key in merged_var.keys() and os.path.exists(merged_var[tcl_key]):
             merged_var = Flow.update_tclvar(merged_var,merged_var[tcl_key])
         # Re merge user_ymal information, cause this one controls all by user and the priority shall be correct
         with open(user_cfg_yaml, "r") as stream:
