@@ -3,6 +3,8 @@ block_name: nbio_pcie_t
 nick_name: run_01
 libs_info: /home/chenanping/edp/source/libs/gen_libs/case/install/
 workdir: $flow_path/../
+foundry: SAMSUNG
+node: S4
 #git_url: /home/chenanping/edp_dev/edp/.git
 pnr_innovus:
     upf_file: ""
