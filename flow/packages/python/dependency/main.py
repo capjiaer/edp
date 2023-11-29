@@ -173,6 +173,12 @@ class DependencyIni:
 					exit()
 		return final_var
 
+	def return_dict(self):
+		"""
+		:return: the cfg file dictionary, this function is required for flow initialisation
+		"""
+		return self.data_ini
+
 	def check_user_config(self):
 		# Make sure have a copy in the ini directory
 		if os.path.isfile(self.config_file) is False:
@@ -237,6 +243,7 @@ class DependencyIni:
 			self.stream2tcl_io(data_ini, stream, key_list)
 			stream.write("\n")
 			stream.close()
+		print("Generated tcl file ->", tcl_out)
 
 	@staticmethod
 	def dict2out(dict_in, file_out, out_type='yaml'):
@@ -319,6 +326,23 @@ class DependencyIni:
 					# Delete prefix from old key value pairs, if key is in the list ...
 					if ele_key in key_list:
 						self.pre_key = ""
+
+	def get_cfg_info(self):
+		"""
+		Return data_ini info
+		"""
+		return self.data_ini
+
+	def show_cfg_info(self, target: str, mode: str):
+		"""
+		:param target:
+		:param mode:
+		:return:
+		"""
+		self.mode_list = self.data_ini[target][mode]
+		for ele in self.mode_list:
+			for ele_key, ele_value in ele.items():
+				print(ele_key, "	-> ", ele_value)
 
 	@staticmethod
 	def get_target_info(target):
