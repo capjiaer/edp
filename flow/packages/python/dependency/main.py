@@ -97,7 +97,6 @@ class DependencyIni:
 		:return: a yaml file list
 		"""
 		user_config = DependencyIni(input_config_file=user_yaml).data_ini
-		print('Debug info')
 		if mode == "flow_ini":
 			check_dir = os.path.dirname(user_yaml)
 			dir_branch = check_dir + "/" + user_config["block_name"] + "/" + user_config["nick_name"] + "/" + branch
