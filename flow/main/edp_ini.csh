@@ -7,4 +7,4 @@ set srcfile=${srcdir}/edp_ini.py
 echo $srcfile
 
 #Execute file
-python3.11 $srcfile $*
+python3 $srcfile $*

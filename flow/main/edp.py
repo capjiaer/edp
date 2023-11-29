@@ -33,10 +33,10 @@ branch_info = os.getcwd().split("/")[-1]
 yaml_list = DependencyIni.get_yaml_list(user_cfg_yaml, branch_info, mode='flow')
 merged_var = DependencyIni().merged_var(*yaml_list, info=False)
 # Add tcl_var to support a std alone tcl flow, the tcl file deliverd by key setup_tcl
-if "tcl_var" in merged_var.keys() and os.path.exists(merged_var["setup_tcl"]):
-    tcl_var = TranslateCmd.get_dict_interp(merged_var["setup_tcl"])
-else:
-    tcl_var = dict()
+merged_var = Flow.update_tclvar(merged_var,merged_var['setup_tcl'])
+with open(yaml_list[-1], 'r') as stream:
+	user_dict = yaml.safe_load(stream)
+merged_var = DependencyIni.merge_dicts(merged_var, user_dict)
 # Options is required
 
 # Step1: Argparse setup
@@ -103,7 +103,7 @@ if args.gen_cmds:
             util_dir_list = [main_util, cmd_util]
             TranslateCmd(cmd).util_apply(util_dir_list)
             # Do replacement for var replacement
-            TranslateCmd.dict_replace_tclfile(tcl_var,cmd,cmd)
+            TranslateCmd.dict_replace_tclfile(merged_var,cmd,cmd)
         print("")
 
 # Func4: Create branch

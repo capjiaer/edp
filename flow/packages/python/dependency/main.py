@@ -216,7 +216,7 @@ class DependencyIni:
         :param tcl_out: the output tcl file
         :return: None
         """
-        data_in = TranslateCmd.get_dict_interp(tcl_in)
+        data_ini = TranslateCmd.get_dict_interp(tcl_in)
         key_list = data_ini.keys()
 
         with open(tcl_out, mode) as stream:
