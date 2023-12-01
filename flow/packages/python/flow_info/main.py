@@ -141,7 +141,7 @@ class FlowIni:
 
 		if input_dict:
 			foundry_name = input_dict['foundry'].upper()
-			node = input_dict['node']
+			node = input_dict['node'].upper()
 			project_name = input_dict['project_name']
 			if "git_url" in input_dict.keys():
 				repo_url = input_dict['git_url']
