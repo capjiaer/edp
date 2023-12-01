@@ -462,14 +462,15 @@ class DependencyIni:
 		# Use default info if exist
 		for ele in info_list:
 			if "default" in merged_var[target].keys():
-				if ele in merged_var[target]['default'].keys():
+				if  ele in merged_var[target]['default'].keys():
 					info_dict[ele] = merged_var[target]['default'][ele]
-					if step_name in merged_var[target].keys():
+					# If other setup, then use user setup here
+					if isinstance(merged_var[target][step_name], dict) and  step_name in merged_var[target].keys():
 						if ele in merged_var[target][step_name].keys():
 							info_dict[ele] = merged_var[target][step_name][ele]
 		# Use step info if exist
 		if step_name in merged_var[target]:
-			if 'tool_opt' in merged_var[target][step_name].keys():
+			if isinstance(merged_var[target][step_name], dict) and 'tool_opt' in merged_var[target][step_name].keys():
 				info_dict['tool_opt'] = merged_var[target][step_name]['tool_opt']
 		# setup final str for makefile
 		cd_str = "@cd runs/%s.%s; " % (target, step_name)
