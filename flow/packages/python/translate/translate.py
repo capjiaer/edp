@@ -6,8 +6,24 @@ class TranslateCmd:
 		super(TranslateCmd, self).__init__()
 		self.input_file = in_file
 
-	def info_replace(self, dir_list, replace_str, pattern):
-		required_file_name = re.match(pattern, replace_str).group(1)
+	# update 20231204 if var_list is list, if replace is decided by flow owner vars
+	# import util your_util_tcl $your_var
+	# if $your_var is 1 or Ture, then do replacement, else, delete it and ignore replacement, default is True
+	def replace_check(tcl_interp_obj, var_list):
+		return_flag = 1
+		if var_list:
+			for ele in var_list:
+				ele = ele[1:]
+				if int(tcl_interp_obj.eval("info exist {}".format(ele))) != 1 or not tcl_interp_obj.getvar(ele):
+					return_flag = 0
+		else:
+			return return_flag
+		return return_flag
+
+	def info_replace(self, dir_list, replace_str, pattern, tcl_interp_obj=None):
+		required_info = re.match(pattern, replace_str).group(1).split()
+		required_file_name = required_info[0]
+		required_var_name = required_info[1:]
 		# get file name
 		util_file_name = None
 		for dirs in dir_list:
@@ -17,15 +33,26 @@ class TranslateCmd:
 					if os.path.basename(file_path) == required_file_name:
 						util_file_name = file_path
 		if util_file_name:
-			# Do replacements
-			with open(util_file_name) as stream:
-				info = stream.read()
-			return info
+			if required_var_name:
+				# If check list exists:
+				if TranslateCmd.replace_check(tcl_interp_obj, required_var_name):
+					# Do replacements
+					with open(util_file_name) as stream:
+						info = stream.read()
+					return info
+				else:
+					# Remove this line, not required
+					return None
+			else:
+				# Check list not exists, default required:
+				with open(util_file_name) as stream:
+					info = stream.readlines()
+				return info
 		else:
 			print("EDP_ERROR: Cannot find util file " + required_file_name + " skip util replacement")
 			return replace_str
 
-	def util_apply(self, util_dir_list, pattern=r'^#\s+import\s+util\s+(.*)\s*'):
+	def util_apply(self, util_dir_list, pattern=r'^#\s+import\s+util\s+(.*)\s*', tcl_interp_obj=None):
 		# Apply the util transformation into the command
 		# eg:
 		#	# import util step1.tcl
@@ -37,7 +64,7 @@ class TranslateCmd:
 		with open(self.input_file, "w") as stream:
 			for line in stream_info:
 				if re.search(pattern, line):
-					line = self.info_replace(util_dir_list, line, pattern)
+					line = self.info_replace(util_dir_list, line, pattern, tcl_interp_obj)
 					if isinstance(line, list):
 						for ele in line:
 							stream.write(ele)
@@ -47,7 +74,7 @@ class TranslateCmd:
 					stream.write(line)
 		# Update 20231124
 		if recursion_flag:
-			self.util_apply(util_dir_list, pattern)
+			self.util_apply(util_dir_list, pattern, tcl_interp_obj)
 
 	def count_symbol(self, input_str, ini_num, add_syn="{", minus_syn="}"):
 		for i, c in enumerate(input_str):
