@@ -38,7 +38,7 @@ class TranslateCmd:
 				if TranslateCmd.replace_check(tcl_interp_obj, required_var_name):
 					# Do replacements
 					with open(util_file_name) as stream:
-						info = stream.read()
+						info = stream.readlines()
 					return info
 				else:
 					# Remove this line, not required
