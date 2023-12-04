@@ -465,9 +465,10 @@ class DependencyIni:
 				if  ele in merged_var[target]['default'].keys():
 					info_dict[ele] = merged_var[target]['default'][ele]
 					# If other setup, then use user setup here
-					if isinstance(merged_var[target][step_name], dict) and  step_name in merged_var[target].keys():
-						if ele in merged_var[target][step_name].keys():
-							info_dict[ele] = merged_var[target][step_name][ele]
+					if step_name in merged_var[target].keys():
+						if isinstance(merged_var[target][step_name], dict) and  step_name in merged_var[target].keys():
+							if ele in merged_var[target][step_name].keys():
+								info_dict[ele] = merged_var[target][step_name][ele]
 		# Use step info if exist
 		if step_name in merged_var[target]:
 			if isinstance(merged_var[target][step_name], dict) and 'tool_opt' in merged_var[target][step_name].keys():
