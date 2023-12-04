@@ -14,7 +14,7 @@ class TranslateCmd:
 		if var_list:
 			for ele in var_list:
 				ele = ele[1:]
-				if int(tcl_interp_obj.eval("info exist {}".format(ele))) != 1 or not tcl_interp_obj.getvar(ele):
+				if int(tcl_interp_obj.eval("info exist {}".format(ele))) != 1 or str(tcl_interp_obj.getvar(ele)) != "1":
 					return_flag = 0
 		else:
 			return return_flag
