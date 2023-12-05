@@ -99,10 +99,15 @@ if args.gen_cmds:
 			cmd_split_list = os.path.dirname(cmd).split("/")
 			index = cmd_split_list.index("cmds")
 			cmd_util = os.getcwd() + "/flow/initialize/cmds/" + cmd_split_list[index+1] + "/util/"
+			proc_util = os.getcwd() + "/tune/" + cmd_split_list[index+1] + "/"
+			user_util = os.getcwd() + "/tune/util/"
+			util_dir_list_pre = [user_util, main_util, proc_util, cmd_util]
 			# Util file will comes from:
-			# 1: <workdir>/flow/initialize/templates/main_util
-			# 2: <workdir>/flow/initialize/cmds/dependency_ele/util
-			util_dir_list = [main_util, cmd_util]
+			# 1: <workdir>/tune/util/
+			# 2: <workdir>/flow/initialize/templates/main_util
+			# 3: <workdir>/tune/dependency_ele
+			# 4: <workdir>/flow/initialize/cmds/dependency_ele/util
+			util_dir_list = [ele for ele in util_dir_list_pre if os.path.exists(ele)]
 			TranslateCmd(cmd).util_apply(util_dir_list, tcl_interp_obj=tcl_interp_obj)
 			# Do replacement for var replacement
 			TranslateCmd.dict_replace_tclfile(merged_var,cmd,cmd)
