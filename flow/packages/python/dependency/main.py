@@ -304,18 +304,18 @@ class DependencyIni:
 						if self.pre_key == "":
 							# if without pre parry declarations
 							# ele_value = str(ele_value).replace(",", "").replace("{", "[").replace("}", "]").replace(":", "")
-							ele_value = str(ele_value).replace("[", "[list ").replace(",", "")
+							ele_value = str(ele_value).replace("[", "[list ").replace(",", "").replace("\'", "\"")
 							output_file.write("set " + ele_key + " " + str(ele_value) + "\n")
 						else:
 							# if with pre parry declarations
 							sp1, sp2 = self.pre_key.split(",", 1)
 							if re.match(".*,", sp2):
 								head, tail = sp2.split(",", 1)
-								ele_value = str(ele_value).replace("[", "[list ").replace(",", "")
+								ele_value = str(ele_value).replace("[", "[list ").replace(",", "").replace("\'", "\"")
 								output_file.write(
 									"set " + head + "(" + tail + ',' + ele_key + ") " + str(ele_value) + "\n")
 							else:
-								ele_value = str(ele_value).replace("[", "[list ").replace(",", "")
+								ele_value = str(ele_value).replace("[", "[list ").replace(",", "").replace("\'", "\"")
 								output_file.write("set " + sp2 + "(" + ele_key + ") " + str(ele_value) + "\n")
 							# ele_value = str(ele_value).replace(",", "").replace("{", "[").replace("}", "]").replace(":", "")
 
