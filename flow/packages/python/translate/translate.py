@@ -81,7 +81,7 @@ class TranslateCmd:
 			print("EDP_ERROR: Cannot find util file " + required_file_name + " skip util replacement")
 			return replace_str
 
-	def source_apply(self, source_dir_list, pattern=r'^#\s+import\s+util\s+(.*)\s*', tcl_interp_obj=None):
+	def source_apply(self, source_dir_list, pattern=r'^#\s+import\s+source\s+(.*)\s*', tcl_interp_obj=None):
 		# Apply the source transformation into the command
 		# eg:
 		#	# import source step1.tcl
