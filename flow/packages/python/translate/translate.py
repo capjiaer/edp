@@ -20,18 +20,47 @@ class TranslateCmd:
 			return return_flag
 		return return_flag
 
-	def info_replace(self, dir_list, replace_str, pattern, tcl_interp_obj=None):
-		required_info = re.match(pattern, replace_str).group(1).split()
-		required_file_name = required_info[0]
-		required_var_name = required_info[1:]
-		# get file name
-		util_file_name = None
+	def get_file_name(dir_list, required_file_name):
+		# Get abs file path for further usage
+		file_name = None
 		for dirs in dir_list:
 			for root, util_dirs, files in os.walk(dirs):
 				for file in files:
 					file_path = os.path.join(root, file)
 					if os.path.basename(file_path) == required_file_name:
-						util_file_name = file_path
+						file_name = file_path
+						return file_name
+		return file_name
+
+	def source_replace(self, dir_list, replace_str, pattern, tcl_interp_obj=None):
+		required_info = re.match(pattern, replace_str).group(1).split()
+		required_file_name = required_info[0]
+		required_var_name = required_info[1:]
+		source_file_name = TranslateCmd.get_file_name(dir_list, required_file_name)
+		if source_file_name:
+			if required_var_name:
+				# If check list exist
+				if TranslateCmd.replace_check(tcl_interp_obj, required_var_name):
+					# Do replacement
+					info = "source {}".format(source_file_name)
+					return info
+				else:
+					# Remove this line, not required
+					return None
+			else:
+				# Check list not exits, means it is default required
+				info = "source {}".format(source_file_name)
+				return info
+		else:
+			print("EDP_ERROR: Cannot find source file " + required_file_name + " skip source replacement")
+
+
+	def info_replace(self, dir_list, replace_str, pattern, tcl_interp_obj=None):
+		required_info = re.match(pattern, replace_str).group(1).split()
+		required_file_name = required_info[0]
+		required_var_name = required_info[1:]
+		# get file name
+		util_file_name = TranslateCmd.get_file_name(dir_list, required_file_name)
 		if util_file_name:
 			if required_var_name:
 				# If check list exists:
@@ -51,6 +80,21 @@ class TranslateCmd:
 		else:
 			print("EDP_ERROR: Cannot find util file " + required_file_name + " skip util replacement")
 			return replace_str
+
+	def source_apply(self, source_dir_list, pattern=r'^#\s+import\s+util\s+(.*)\s*', tcl_interp_obj=None):
+		# Apply the source transformation into the command
+		# eg:
+		#	# import source step1.tcl
+		# Read in information -> source "os.path.abspath(step1.tcl)"
+		with open(self.input_file) as stream:
+			stream_info = stream.readlines()
+		# Write out information
+		with open(self.input_file, "w") as stream:
+			for line in stream_info:
+				if re.search(pattern, line):
+					line = self.source_replace(source_dir_list, line, pattern, tcl_interp_obj)
+				stream.write(line)
+
 
 	def util_apply(self, util_dir_list, pattern=r'^#\s+import\s+util\s+(.*)\s*', tcl_interp_obj=None):
 		# Apply the util transformation into the command
