@@ -115,7 +115,7 @@ if args.gen_cmds:
 			# 1:<workdir>/tune/Dependency_ele
 			proc_dir_list_pre = [proc_tune, user_tune]
 			proc_dir_list = [ele for ele in proc_dir_list_pre if os.path.exists(ele)]
-			TranslateCmd(cmd).source_apply(source_dir_list, tcl_interp_obj=tcl_interp_obj)
+			TranslateCmd(cmd).source_apply(proc_dir_list, tcl_interp_obj=tcl_interp_obj)
 			# Do replacement for var replacement
 			TranslateCmd.dict_replace_tclfile(merged_var,cmd,cmd)
 		print("")
