@@ -38,6 +38,9 @@ branch = os.getcwd() + "/" + user_config["block_name"] + "/" + user_config["nick
 # 2.2 Git download required information
 if "git_url" in user_config.keys() and user_config["git_url"] is not None:
 	repo_url = user_config["git_url"]
+	if not os.path.exists(repo_url):
+		print("Check your \"git_url\" info and try again")
+		exit()
 else:
 	repo_url = "git@github.com:capjiaer/edp.git"
 if "git_branch" in user_config.keys() and user_config["git_branch"] is not None:
