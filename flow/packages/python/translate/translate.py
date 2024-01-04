@@ -465,13 +465,56 @@ class TranslateCmd:
 		return 0
 
 	@staticmethod
+	def string_info(str_in):
+		count_info = dict()
+		count_info[0] = 0
+		split_flag = 0
+		for ele in str_in:
+			if ele == "{":
+				split_flag = split_flag + 1
+				if split_flag not in count_info.keys():
+					count_info[split_flag] = 0
+				if ele == "}":
+					split_flag = split_flag - 1
+				if ele == "\"":
+					count_info[split_flag] = count_info[split_flag] + 1
+			return count_info
+
+	def string_fix(str_in):
+		count_map = TranslateCmd.string_info(str_in)
+		count_info = dict()
+		count_info[0] = 0
+		new_str = str()
+		split_flag = 0
+		for ele in str_in:
+			if ele == "{":
+				split_flag = split_flag + 1
+				if split_flag not in count_info.keys():
+					count_info[split_flag] = 0
+				if ele == "}":
+					split_flag = split_flag - 1
+				if ele == "\"":
+					count_info[split_flag] = count_info[split_flag] + 1
+					if count_info[split_flag] <= count_map[split_flag]/2:
+						ele = "{"
+					else:
+						ele = "}"
+				new_str = new_str + ele
+			return new_str
+
+
+
+
+	@staticmethod
 	def str2list(str_in):
 		# Switch tcl based "list" into python "list" if "{	}" has been used in tcl value
 		split_flag = 0
 		str_ini = ""
 		list_ini = list()
 		str_count = 0
-
+		# Added in 20240104
+		if re.match(r"\{.*\}", str_in):
+			str_in = TranslateCmd.string_fix(str_in)
 		if re.match(r"^\{.*\}$", str_in):
 			# String only: {xxx} -> xxx
 			if " " not in str_in:
