@@ -481,7 +481,7 @@ class TranslateCmd:
 			return count_info
 
 	def string_fix(str_in):
-		count_map = TranslateCmd.string_info(str_in)
+		#count_map = TranslateCmd.string_info(str_in)
 		count_info = dict()
 		count_info[0] = 0
 		new_str = str()
@@ -495,7 +495,7 @@ class TranslateCmd:
 					split_flag = split_flag - 1
 				if ele == "\"":
 					count_info[split_flag] = count_info[split_flag] + 1
-					if count_info[split_flag] <= count_map[split_flag]/2:
+					if count_info[split_flag] % 2 == 1:
 						ele = "{"
 					else:
 						ele = "}"
