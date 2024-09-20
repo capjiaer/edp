@@ -1,0 +1,29 @@
+pnr_innovus:
+  dependency:
+    init:
+      out: pass/init.pass
+      cmd: init.tcl
+    floorplan:
+      in: pass/init.pass
+      out: pass/floorplan.pass
+      cmd: floorplan.tcl
+    place:
+      in: pass/floorplan.pass
+      out: pass/place.pass
+      cmd: place.tcl
+    cts:
+      in: pass/place.pass
+      out: pass/cts.pass
+      cmd: cts.tcl
+    postcts:
+      in: pass/cts.pass
+      out: pass/postcts.pass
+      cmd: postcts.tcl
+    route:
+      in: pass/postcts.pass
+      out: pass/route.pass
+      cmd: route.tcl
+    posteroute:
+      in: pass/route.pass
+      out: pass/postroute.pass
+      cmd: postroute.tcl

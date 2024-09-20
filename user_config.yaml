@@ -1,7 +1,8 @@
-project_name: project1
-block_name: nbio_pcie_t
-nick_name: run_01
-foundry: SAMSUNG
-node: S4
-git_url: /home/chenanping/edp_dev/edp/.git
-
+project:    
+    project_name: project1
+    block_name: nbio_pcie_t
+    nick_name: run_01
+    foundry: SAMSUNG
+    node: S4
+    git_url: /home/chenanping/edp_dev/edp/.git
+    

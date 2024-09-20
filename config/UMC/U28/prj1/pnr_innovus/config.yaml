@@ -1,0 +1,81 @@
+pnr_innovus:
+  default:
+    lsf: 1
+    cpu_num: 4
+    memory: 1000
+    option: ""
+    queue: "normal"
+    span: 1
+    pre_lsf: " "
+    tool_opt: "xterm -e innovus -log ../../logs/pnr_innovus/ -file"
+    local_cpuusage: 32
+    log_redirection: " "
+
+  init:
+    pre_lsf: "xterm -T init -e"
+    tool_opt: "innovus -log ../../logs/pnr_innovus/init -file"
+  floorplan:
+    pre_lsf: "xterm -T floorplan -e"
+    tool_opt: "innovus -log ../../logs/pnr_innovus/floorplan -file"
+    RETURN_AFTER_INIT: 1
+    UPF_FLOW: 0
+    DO_CK_IO_BUFFER: 1
+    DO_GACELL: 0
+    DO_POWER_OPT: 0
+    PROCESS_FLOORPLAN: 0
+    CURRENT_STEP: "Start interaction"
+    fpName: ""
+    fp_step:
+      - LOAD_UPF
+      - LOAD_FLOORPLAN
+      - PROCESS_FLOORPLAN
+      - ADD_TRACK
+      - ADD_BLOCKAGE
+      - CUT_ROW
+      - DO_GLOCALNETFILE
+      - ADD_PHYSICAL_CELL
+      - ADD_IO_BUFFER
+      - FP_LAST
+  place:
+    pre_lsf: "xterm -T place -e"
+    tool_opt: "innovus -log ../../logs/pnr_innovus/place -file"
+    DO_MBIT_OPT: 0
+    DO_SPARE_CELL: 0
+    DO_POWER_OPT: 1
+    DO_MBIT_OPT: 0
+    DO_TIE_HILO: 1
+    cts_common_setting: 1
+  cts:
+    pre_lsf: "xterm -T cts -e"
+    tool_opt: "innovus -log ../../logs/pnr_innovus/cts -file"
+    DO_POWER_OPT: 1
+    DO_MBI_OPT: 0
+    DO_SCAN_REORDER: 0
+  postcts:
+    pre_lsf: "xterm -T postcts -e"
+    tool_opt: "innovus -log ../../logs/pnr_innovus/postcts -file"
+    DO_POSTCTS_FIXHOLD: 0
+    DO_MBIT_OPT: 0
+    DO_TIE_HILO: 0
+    DO_POWER_OPT: 0
+  route:
+    pre_lsf: "xterm -T route -e"
+    tool_opt: "innovus -log ../../logs/pnr_innovus/route -file"
+    DO_MBIT_OPT: 0
+    DO_POWER_OPT: 1
+  postroute:
+    pre_lsf: "xterm -T postroute -e"
+    tool_opt: "innovus -log ../../logs/pnr_innovus/postroute -file"
+    DO_MBIT_OPT: 0
+    DO_POWER_OPT: 1
+    DO_POSTROUTE_FIXHOLD: 1
+    DO_POSTROUTE_TIE_HILO: 0
+  package_info:
+    sum_info:
+      - CAL_AREA
+      - HIGH_LIGHT_PATH
+      - RELEASE_DATA
+
+
+
+
